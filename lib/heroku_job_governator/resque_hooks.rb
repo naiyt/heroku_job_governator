@@ -2,12 +2,14 @@ module GovernedJob
   module ResqueHooks
     def after_perform_scale_down(*args)
       puts "************************************************** after perform"
-      scale_down(queue(args))
+      # scale_down(queue(args))
+      scale_down('worker_umich_qa')
     end
 
     def on_failure_scale_down(exception, *args)
       puts "************************************************** on failure"
-      scale_down(queue(args))
+      # scale_down(queue(args))
+      scale_down('worker_umich_qa')
     end
     
     def after_enqueue_scale_up(*args)
