@@ -44,8 +44,6 @@ module GovernedJob
     base.class_eval do
       if defined?(Resque)
         extend ResqueHooks
-      elsif defined?(ActiveJob)
-        extend ActiveJobHooks
       else
         raise "no valid job processors to govern found"
       end
