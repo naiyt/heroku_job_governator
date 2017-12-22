@@ -15,13 +15,21 @@ module GovernedJob
         result['quantity']
       end
       
-      def workers=(quantity, queue)
+      def scale_workers(quantity, queue)
+        puts "Scaling workers on #{queue} to #{quantity}"
         return unless authorized?
         
         quantity = quantity.to_i
-        
-        result = @@heroku.formation.update(app_name, queue, { quantity: quantity })
-        result['quantity'] == quantity
+        begin
+          puts "attempting heroku update"
+          result = @@heroku.formation.update(app_name, queue, { quantity: quantity })
+          result['quantity'] == quantity
+        rescue Exception => e 
+          puts "*****ERRROR"
+          puts e.message
+          puts e.backtrace
+          puts "*****END ERRROR"
+        end
       end
       
       protected
@@ -53,14 +61,14 @@ module GovernedJob
     puts "**************************************************"
     puts "scaling up"
     puts "**************************************************"
-    Governer.workers = 1
+    Governer.scale_workers(1, queue)
   end
   
   def scale_down(queue)
     puts "**************************************************"
     puts "scaling down"
     puts "**************************************************"
-    Governer.workers = 0
+    Governer.scale_workers(0, queue)
   end
   
 end 
