@@ -42,7 +42,7 @@ module GovernedJob
       private
       
       def authorized?
-        Rails.env == "Production"
+        Rails.env == "production"
       end
     end
   end
