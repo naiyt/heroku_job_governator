@@ -1,0 +1,2 @@
+require_relative "heroku_job_governator/version"
+require_relative "heroku_job_governator/governed_job"
