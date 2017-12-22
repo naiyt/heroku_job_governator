@@ -14,9 +14,17 @@ module GovernedJob
       puts "&&"
       puts args
       puts "&&"
-      debugger
       puts "************************************************** after enqueue"
-      scale_up(queue(args))
+      begin
+        q = queue(args)
+        puts "****(queue) #{q}"
+      rescue Exception => e
+        puts "*****ERRROR"
+        puts e.message
+        puts e.backtrace
+        puts "*****END ERRROR"
+      end
+      scale_up('worker_umich_qa')
     end
     
     def queue(*args)
