@@ -1,6 +1,5 @@
 require 'platform-api'
 require_relative "resque_hooks"
-require_relative "active_job_hooks"
 require_relative "job_governer"
 
 module GovernedJob 
