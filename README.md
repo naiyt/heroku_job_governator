@@ -66,6 +66,10 @@ So the dyno will be scaled to 2 workers.
 
 Since there is no easy mechanism to determine which dyno a given job is running on, scaling down will *only happen when there are no more enqueued jobs*.
 
+### ActiveJob
+
+If using ActiveJob you must still set your `queue_adapter` correctly (e.g., `:delayed_job` or `:sidekiq`). Then you add this mixin to your `ActiveJob` class: `include HerokuJobGovernator::Hooks::ActiveJob`
+
 ## Development
 
 TODO - fill this out
