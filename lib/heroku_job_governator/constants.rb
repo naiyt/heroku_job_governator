@@ -1,3 +1,3 @@
 module HerokuJobGovernator
-  VERSION = "0.2.0".freeze
+  DELAYED_JOB = :delayed_job
 end

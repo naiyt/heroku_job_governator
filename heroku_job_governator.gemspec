@@ -6,7 +6,7 @@ require 'heroku_job_governator/version'
 Gem::Specification.new do |spec|
   spec.name          = "heroku_job_governator"
   spec.version       = HerokuJobGovernator::VERSION
-  spec.authors       = ["Brandon Broschinsky"]
+  spec.authors       = ["Brandon Broschinsky", "Nate Collings"]
   spec.email         = ["brandonbr@instructure.com"]
 
   spec.summary       = %q{Gem that enables auto scaling heroku workers based on a configuration}
@@ -24,11 +24,15 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-  
+
   spec.add_dependency 'platform-api'
   spec.add_dependency 'resque'
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec"
+  spec.add_development_dependency "pry"
+  spec.add_development_dependency "pry-nav"
+  spec.add_development_dependency "delayed_job_active_record"
+  spec.add_development_dependency "rubocop"
 end
