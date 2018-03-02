@@ -1,8 +1,7 @@
+
 # HerokuJobGovernator
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/heroku_job_governator`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Scale Heroku worker dynos based on queue length.
 
 ## Installation
 
@@ -20,22 +19,65 @@ Or install it yourself as:
 
     $ gem install heroku_job_governator
 
-## Usage
+## Configuration
 
-TODO: Write usage instructions here
+The following environment variables must be set:
+
+* `HEROKU_API_KEY`
+* `HEROKU_APP_NAME`
+
+The gem can then be configured by creating an initializer in `config/initializers` called `heroku_job_governator.rb`.
+
+Configuration example:
+
+```ruby
+HerokuJobGovernator.configure do |config|
+  config.queue_adapter = :delayed_job
+  config.default_queue = :worker
+  config.queues = {
+    worker: {
+      workers_min: 0,
+      workers_max: 2,
+      max_enqueued_per_worker: 5,
+    },
+    critical: {
+      workers_min: 0,
+      workers_max: 2,
+      max_enqueued_per_worker: 3,
+    }
+  }
+end
+```
+
+Options breakdown:
+
+- `queue_adapter` - this is one of the supported queue_adapters (currently only :delayed_job)
+- `default_queue` - this is the default worker queue used when a specific job queue is not specified
+- `queues` - a hash of workers. Each must be given: `workers_min` (the minimum number of dynos that the worker will be scaled too), `workers_max` (the max number of dynos that the worker will be scaled too), and `max_enqueued_per_worker`
+
+The gem will determine when to scale up based on (current number of enqueued jobs / max_enqueued_per_worker), rounded up. For example:
+
+- 10 enqueued jobs
+- `max_enqueued_per_worker` of 6
+
+(10 / 6) = 1.67, rounded up to `2`
+
+So the dyno will be scaled to 2 workers.
+
+Since there is no easy mechanism to determine which dyno a given job is running on, scaling down will *only happen when there are no more enqueued jobs*.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+TODO - fill this out
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## TODOS
 
-## Contributing
+Adapters to add:
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/heroku_job_governator.
-
+- ActiveJob
+- Sidekiq
+- Resque
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
