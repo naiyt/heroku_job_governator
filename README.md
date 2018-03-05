@@ -51,11 +51,11 @@ end
 
 Options breakdown:
 
-- `queue_adapter` - this is one of the supported queue_adapters (currently only :delayed_job)
+- `queue_adapter` - this is one of the supported queue_adapters
 - `default_queue` - this is the default worker queue used when a specific job queue is not specified
 - `queues` - a hash of workers. Each must be given: `workers_min` (the minimum number of dynos that the worker will be scaled too), `workers_max` (the max number of dynos that the worker will be scaled too), and `max_enqueued_per_worker`
 
-The gem will determine when to scale up based on (current number of enqueued jobs / max_enqueued_per_worker), rounded up. For example:
+The gem will determine when to scale up based on (current number of enqueued jobs / `max_enqueued_per_worker`), rounded up. For example:
 
 - 10 enqueued jobs
 - `max_enqueued_per_worker` of 6
@@ -81,6 +81,7 @@ class MyCoolJob < ActiveJob::Base
   def perform
     puts "I'm performing a cool job"
   end
+end
 ```
 
 ### DelayedJob
@@ -110,8 +111,6 @@ TODO - fill this out
 
 Adapters to add:
 
-- ActiveJob
-- Sidekiq
 - Resque
 
 ## License
