@@ -70,6 +70,14 @@ Since there is no easy mechanism to determine which dyno a given job is running 
 
 If using ActiveJob you must still set your `queue_adapter` correctly (e.g., `:delayed_job` or `:sidekiq`). Then you add this mixin to your `ActiveJob` class: `include HerokuJobGovernator::Hooks::ActiveJob`
 
+### Scaling With Rake Tasks
+
+Generally the jobs should be able to scale the workers themselves. But if there was ever a problem (e.g., the Heroku API was down or a worker was restarted while trying to scale) that could get missed. To get around that there are rake tasks that you can run to scale on a scheduled basis:
+
+`bundle exec rake heroku_job_governator:scale_down`
+
+`bundle exec rake heroku_job_governator:scale_up`
+
 ## Development
 
 TODO - fill this out
