@@ -66,9 +66,33 @@ So the dyno will be scaled to 2 workers.
 
 Since there is no easy mechanism to determine which dyno a given job is running on, scaling down will *only happen when there are no more enqueued jobs*.
 
-### ActiveJob
+### Adapters
+
+#### ActiveJob
 
 If using ActiveJob you must still set your `queue_adapter` correctly (e.g., `:delayed_job` or `:sidekiq`). Then you add this mixin to your `ActiveJob` class: `include HerokuJobGovernator::Hooks::ActiveJob`
+
+Example:
+
+```ruby
+class MyCoolJob < ActiveJob::Base
+  include HerokuJobGovernator::Hooks::ActiveJob
+
+  def perform
+    puts "I'm performing a cool job"
+  end
+```
+
+### DelayedJob
+
+DelayedJob can either be used on its own or in conjunction with `ActiveJob` using the instructions above. Either way, just set your `queue_adapter` to `:delayed_job`.
+
+### Sidekiq
+
+Currently you can only use Sidekiq with `ActiveJob`. Follow the instructions for using `ActiveJob` and set your `queue_adapter` to `:sidekiq`.
+
+Given how sidekiq works you likely will get more bang for you buck by scaling the number of threads each worker utilizes rather than spinning up a bunch of extra workers. (Too many workers and threads and you may run into database connection limits anyway). However, you may still see some good benefits by setting your `workers_min` to 0 and your `workers_max` to 1. That way you're only running the workers when jobs need to be processed. Keep in mind that since the worker needs to be kept up to wait for any jobs in `scheduled` or `retries` you may end up having workers enabled for longer than you expected if you have either of those scheduled for a longer period in the future.
+
 
 ### Scaling With Rake Tasks
 

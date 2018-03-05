@@ -58,6 +58,8 @@ module HerokuJobGovernator
         case HerokuJobGovernator.config.queue_adapter.to_sym
         when HerokuJobGovernator::DELAYED_JOB
           HerokuJobGovernator::Interfaces::DelayedJob.new
+        when HerokuJobGovernator::SIDEKIQ
+          HerokuJobGovernator::Interfaces::Sidekiq.new
         end
       end
     end

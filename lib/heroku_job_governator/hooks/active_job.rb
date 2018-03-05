@@ -9,10 +9,15 @@ module HerokuJobGovernator
 
           around_perform do |job, block|
             begin
+              HerokuJobGovernator::Governor.instance.scale_up(queue(job))
               block.call
             ensure
               HerokuJobGovernator::Governor.instance.scale_down(queue(job))
             end
+          end
+
+          after_perform do |job|
+            HerokuJobGovernator::Governor.instance.scale_down(queue(job))
           end
 
           def queue(job)

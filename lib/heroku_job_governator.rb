@@ -2,6 +2,7 @@ require_relative "heroku_job_governator/constants"
 require_relative "heroku_job_governator/governor"
 require_relative "heroku_job_governator/interfaces/interface"
 require_relative "heroku_job_governator/interfaces/delayed_job"
+require_relative "heroku_job_governator/interfaces/sidekiq"
 require_relative "heroku_job_governator/config"
 require_relative "heroku_job_governator/hooks/active_job"
 require_relative "heroku_job_governator/railtie.rb" if defined?(Rails)

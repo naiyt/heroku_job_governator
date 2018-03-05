@@ -8,7 +8,7 @@ module HerokuJobGovernator
   class Config
     attr_accessor :queue_adapter, :queues, :default_queue
     REQUIRED_SETTINGS = %i[queue_adapter queues default_queue].freeze
-    SUPPORTED_ADAPTERS = [HerokuJobGovernator::DELAYED_JOB].freeze
+    SUPPORTED_ADAPTERS = [HerokuJobGovernator::DELAYED_JOB, HerokuJobGovernator::SIDEKIQ].freeze
 
     def validate!
       errors = []

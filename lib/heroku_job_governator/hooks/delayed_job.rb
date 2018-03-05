@@ -6,6 +6,10 @@ module HerokuJobGovernator
           HerokuJobGovernator::Governor.instance.scale_up(queue(job.queue))
         end
 
+        lifecycle.before(:perform) do |job, *args, &block|
+          HerokuJobGovernator::Governor.instance.scale_up(queue(job.queue))
+        end
+
         lifecycle.after(:perform) do |job, *args, &block|
           HerokuJobGovernator::Governor.instance.scale_down(queue(args[0].queue))
         end
