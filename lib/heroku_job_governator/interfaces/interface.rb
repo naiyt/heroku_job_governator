@@ -7,7 +7,7 @@ end
 module HerokuJobGovernator
   module Interfaces
     class Interface
-      def enqueued_jobs(_queue)
+      def self.enqueued_jobs(_queue)
         raise NotImplentedError
       end
     end

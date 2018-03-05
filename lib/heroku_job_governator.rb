@@ -3,8 +3,10 @@ require_relative "heroku_job_governator/governor"
 require_relative "heroku_job_governator/interfaces/interface"
 require_relative "heroku_job_governator/interfaces/delayed_job"
 require_relative "heroku_job_governator/interfaces/sidekiq"
+require_relative "heroku_job_governator/interfaces/resque"
 require_relative "heroku_job_governator/config"
 require_relative "heroku_job_governator/hooks/active_job"
+require_relative "heroku_job_governator/hooks/resque"
 require_relative "heroku_job_governator/railtie.rb" if defined?(Rails)
 
 module HerokuJobGovernator
@@ -20,5 +22,16 @@ module HerokuJobGovernator
 
   def self.config
     @config ||= HerokuJobGovernator::Config.new
+  end
+
+  def self.adapter_interface
+    case HerokuJobGovernator.config.queue_adapter.to_sym
+    when HerokuJobGovernator::DELAYED_JOB
+      HerokuJobGovernator::Interfaces::DelayedJob
+    when HerokuJobGovernator::SIDEKIQ
+      HerokuJobGovernator::Interfaces::Sidekiq
+    when HerokuJobGovernator::RESQUE
+      HerokuJobGovernator::Interfaces::Resque
+    end
   end
 end

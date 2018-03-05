@@ -1,7 +1,7 @@
 module HerokuJobGovernator
   module Interfaces
     class Sidekiq < HerokuJobGovernator::Interfaces::Interface
-      def enqueued_jobs(queue)
+      def self.enqueued_jobs(queue)
         queued_count = ::Sidekiq::Queue.new(queue).count
         scheduled_count = ::Sidekiq::ScheduledSet.new.count { |s| s.queue == queue }
         retries_count = ::Sidekiq::RetrySet.new.count { |r| r.queue == queue }

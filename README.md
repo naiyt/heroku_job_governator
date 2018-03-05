@@ -88,6 +88,10 @@ end
 
 DelayedJob can either be used on its own or in conjunction with `ActiveJob` using the instructions above. Either way, just set your `queue_adapter` to `:delayed_job`.
 
+### Resque
+
+Set the `queue_adapter` to `:delayed_job` and in your job class add `extend HerokuJobGovernator::Hooks::Resque`. Usage with `ActiveJob` should work as normal.
+
 ### Sidekiq
 
 Currently you can only use Sidekiq with `ActiveJob`. Follow the instructions for using `ActiveJob` and set your `queue_adapter` to `:sidekiq`.
@@ -109,9 +113,7 @@ TODO - fill this out
 
 ## TODOS
 
-Adapters to add:
-
-- Resque
+???
 
 ## License
 

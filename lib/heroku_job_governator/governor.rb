@@ -5,22 +5,22 @@ module HerokuJobGovernator
   class Governor
     include Singleton
 
-    def scale_up(queue)
+    def scale_up(queue, num_enqueued)
       return unless Rails.env.production?
       workers = current_worker_count(queue)
-      required = calculate_required_workers(queue)
+      required = calculate_required_workers(queue, num_enqueued)
       scale_workers(queue, required) if workers < required
     rescue => e # rubocop:disable Style/RescueStandardError
       Rails.logger.info("Error scaling #{queue} up: #{e.message}")
       Rails.logger.info(e.backtrace)
     end
 
-    def scale_down(queue)
+    def scale_down(queue, num_enqueued)
       return unless Rails.env.production?
       # Don't scale down if there are any running jobs, because we don't know what dyno it's running on
-      return if adapter_interface.enqueued_jobs(queue) > 0
+      return if num_enqueued > 0
       workers = current_worker_count(queue)
-      required = calculate_required_workers(queue)
+      required = calculate_required_workers(queue, num_enqueued)
       scale_workers(queue, required) if workers > required
     rescue => e # rubocop:disable Style/RescueStandardError
       Rails.logger.info("Error scaling #{queue} down: #{e.message}")
@@ -36,8 +36,8 @@ module HerokuJobGovernator
       heroku_api.formation.info(app_name, queue)["quantity"]
     end
 
-    def calculate_required_workers(queue)
-      required = (adapter_interface.enqueued_jobs(queue).to_f / HerokuJobGovernator.config.queues[queue][:max_enqueued_per_worker]).ceil
+    def calculate_required_workers(queue, num_enqueued)
+      required = (num_enqueued.to_f / HerokuJobGovernator.config.queues[queue][:max_enqueued_per_worker]).ceil
       max_workers = HerokuJobGovernator.config.queues[queue][:workers_max]
       min_workers = HerokuJobGovernator.config.queues[queue][:workers_min]
       return max_workers if required > max_workers
@@ -51,17 +51,6 @@ module HerokuJobGovernator
 
     def heroku_api
       @heroku_api ||= PlatformAPI.connect(ENV["HEROKU_API_KEY"])
-    end
-
-    def adapter_interface
-      @adapter_interface ||= begin
-        case HerokuJobGovernator.config.queue_adapter.to_sym
-        when HerokuJobGovernator::DELAYED_JOB
-          HerokuJobGovernator::Interfaces::DelayedJob.new
-        when HerokuJobGovernator::SIDEKIQ
-          HerokuJobGovernator::Interfaces::Sidekiq.new
-        end
-      end
     end
   end
 end
