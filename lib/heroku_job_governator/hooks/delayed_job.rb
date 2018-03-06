@@ -3,7 +3,7 @@ module HerokuJobGovernator
     class DelayedJob < ::Delayed::Plugin
       callbacks do |lifecycle|
         lifecycle.after(:enqueue) do |job, *args, &block|
-          queue_name = queue(job.queue)
+          queue_name = get_queue_name(job.queue)
           HerokuJobGovernator::Governor.instance.scale_up(
             queue_name,
             HerokuJobGovernator.adapter_interface.enqueued_jobs(queue_name),
@@ -11,7 +11,7 @@ module HerokuJobGovernator
         end
 
         lifecycle.before(:perform) do |job, *args, &block|
-          queue_name = queue(args[0].queue)
+          queue_name = get_queue_name(args[0].queue)
           HerokuJobGovernator::Governor.instance.scale_up(
             queue_name,
             HerokuJobGovernator.adapter_interface.enqueued_jobs(queue_name),
@@ -19,7 +19,7 @@ module HerokuJobGovernator
         end
 
         lifecycle.after(:perform) do |job, *args, &block|
-          queue_name = queue(args[0].queue)
+          queue_name = get_queue_name(args[0].queue)
           HerokuJobGovernator::Governor.instance.scale_down(
             queue_name,
             HerokuJobGovernator.adapter_interface.enqueued_jobs(queue_name),
@@ -27,7 +27,7 @@ module HerokuJobGovernator
         end
 
         lifecycle.after(:failure) do |job, *args, &block|
-          queue_name = queue(args[0].queue)
+          queue_name = get_queue_name(args[0].queue)
           HerokuJobGovernator::Governor.instance.scale_down(
             queue_name,
             HerokuJobGovernator.adapter_interface.enqueued_jobs(queue_name),
@@ -35,7 +35,7 @@ module HerokuJobGovernator
         end
       end
 
-      def self.queue(queue)
+      def self.get_queue_name(queue)
         (queue || HerokuJobGovernator.config.default_queue).to_sym
       end
     end

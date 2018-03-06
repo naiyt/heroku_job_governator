@@ -7,6 +7,7 @@ module HerokuJobGovernator
 
     def scale_up(queue, num_enqueued)
       return unless Rails.env.production?
+      queue = get_valid_queue_name(queue)
       workers = current_worker_count(queue)
       required = calculate_required_workers(queue, num_enqueued)
       scale_workers(queue, required) if workers < required
@@ -17,6 +18,7 @@ module HerokuJobGovernator
 
     def scale_down(queue, num_enqueued)
       return unless Rails.env.production?
+      queue = get_valid_queue_name(queue)
       # Don't scale down if there are any running jobs, because we don't know what dyno it's running on
       return if num_enqueued > 0
       workers = current_worker_count(queue)
@@ -51,6 +53,12 @@ module HerokuJobGovernator
 
     def heroku_api
       @heroku_api ||= PlatformAPI.connect(ENV["HEROKU_API_KEY"])
+    end
+
+    # If the specified queue name isn't in the config throw it in the default queue
+    def get_valid_queue_name(name)
+      name = name.to_sym
+      HerokuJobGovernator.config.queues.keys.include?(name) ? name : HerokuJobGovernator.config.default_queue
     end
   end
 end
