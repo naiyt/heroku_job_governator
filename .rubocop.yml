@@ -1,0 +1,59 @@
+AllCops:
+  TargetRubyVersion: 2.5
+  Exclude:
+    - '**/templates/**/*'
+    - '**/vendor/**/*'
+    - '**/vendor/**/.*'
+    - '**/node_modules/**/*'
+    - 'db/schema.rb'
+    - 'config/development-local.rb'
+    - 'bin/**/*'
+    - 'Gemfile'
+    - 'Gemfile.lock'
+    - 'config/**/*'
+    - 'spec/spec_helper.rb'
+    - 'spec/rails_helper.rb'
+    - 'config.ru'
+    - 'db/migrate/**/*'
+    - 'Rakefile'
+    - '*.gemspec'
+Metrics/LineLength:
+  Max: 140
+Style/Documentation:
+  Enabled: false
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/SymbolArray:
+  Enabled: false
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+Style/TrailingCommaInArguments:
+  Enabled: true
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: comma
+Style/GuardClause:
+  Enabled: false
+Style/NumericPredicate:
+  Enabled: false
+Layout/EmptyLines:
+  Enabled: false
+Naming/VariableNumber:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: false
+Style/IfUnlessModifier:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Lint/UnusedBlockArgument:
+  Enabled: false
+Style/BlockDelimiters:
+  Enabled: false
