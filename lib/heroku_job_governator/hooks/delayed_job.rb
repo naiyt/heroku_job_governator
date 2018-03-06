@@ -11,7 +11,7 @@ module HerokuJobGovernator
         end
 
         lifecycle.before(:perform) do |job, *args, &block|
-          queue_name = queue(job.queue)
+          queue_name = queue(args[0].queue)
           HerokuJobGovernator::Governor.instance.scale_up(
             queue_name,
             HerokuJobGovernator.adapter_interface.enqueued_jobs(queue_name),
