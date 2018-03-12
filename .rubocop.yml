@@ -57,3 +57,5 @@ Lint/UnusedBlockArgument:
   Enabled: false
 Style/BlockDelimiters:
   Enabled: false
+Style/ZeroLengthPredicate:
+  Enabled: false

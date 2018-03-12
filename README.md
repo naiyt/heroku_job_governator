@@ -92,6 +92,15 @@ DelayedJob can either be used on its own or in conjunction with `ActiveJob` usin
 
 Set the `queue_adapter` to `:delayed_job` and in your job class add `extend HerokuJobGovernator::Hooks::Resque`. Usage with `ActiveJob` should work as normal.
 
+If you are setting the queue via the `@queue` variable it should work as expected. If you are using `enqueue_to`, you must also pass the `queue` name in the args. Example:
+
+```ruby
+  queue_name = select_queue(migration)
+  job_id = Resque.enqueue_to(queue_name, self, { 'queue' => queue_name })
+```
+
+This is necessary because Resque does not pass the queue to the hooks.
+
 ### Sidekiq
 
 Currently you can only use Sidekiq with `ActiveJob`. Follow the instructions for using `ActiveJob` and set your `queue_adapter` to `:sidekiq`.

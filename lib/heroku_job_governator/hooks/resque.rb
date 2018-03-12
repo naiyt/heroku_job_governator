@@ -32,8 +32,8 @@ module HerokuJobGovernator
         )
       end
 
-      def get_queue_name(*args)
-        from_args = args.is_a?(Hash) ? args["queue"] : nil
+      def get_queue_name(args)
+        from_args = args.is_a?(Array) && args.length > 0 ? args[0]["queue"] : nil
         (from_args || ::Resque.queue_from_class(self) || HerokuJobGovernator.config.default_queue).to_sym
       end
     end
