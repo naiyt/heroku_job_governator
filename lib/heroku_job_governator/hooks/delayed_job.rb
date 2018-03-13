@@ -36,7 +36,7 @@ module HerokuJobGovernator
       end
 
       def self.get_queue_name(queue)
-        (queue || HerokuJobGovernator.config.default_queue).to_sym
+        (queue || HerokuJobGovernator.config.default_worker).to_sym
       end
     end
   end

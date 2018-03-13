@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe HerokuJobGovernator::Interfaces::DelayedJob do
-  let(:subject) { HerokuJobGovernator::Interfaces::DelayedJob.new }
+  let(:subject) { HerokuJobGovernator::Interfaces::DelayedJob }
 
   describe "#enqueued_jobs" do
     let(:result_double) { double(:result) }
@@ -17,12 +17,13 @@ RSpec.describe HerokuJobGovernator::Interfaces::DelayedJob do
       before do
         HerokuJobGovernator.configure do |config|
           config.queue_adapter = :delayed_job
-          config.default_queue = :worker
-          config.queues = {
+          config.default_worker = :worker
+          config.workers = {
             worker: {
               workers_min: 1,
               workers_max: 5,
               max_enqueued_per_worker: 5,
+              queue_name: "blahblahbalh",
             },
           }
         end

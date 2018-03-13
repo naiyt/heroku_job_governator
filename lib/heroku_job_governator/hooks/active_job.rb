@@ -37,7 +37,7 @@ module HerokuJobGovernator
 
           def get_queue_name(job)
             queue_name = job.queue_name
-            queue_name = HerokuJobGovernator.config.default_queue if queue_name.to_sym == :default
+            queue_name = HerokuJobGovernator.config.default_worker if queue_name.to_sym == :default
             queue_name.to_sym
           end
         end

@@ -7,7 +7,6 @@ require_relative "heroku_job_governator/interfaces/resque"
 require_relative "heroku_job_governator/config"
 require_relative "heroku_job_governator/hooks/active_job"
 require_relative "heroku_job_governator/hooks/resque"
-require_relative "heroku_job_governator/railtie.rb" if defined?(Rails)
 
 module HerokuJobGovernator
   def self.configure

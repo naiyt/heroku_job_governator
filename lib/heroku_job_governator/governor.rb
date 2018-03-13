@@ -7,41 +7,41 @@ module HerokuJobGovernator
 
     def scale_up(queue, num_enqueued)
       return unless Rails.env.production?
-      queue = get_valid_queue_name(queue)
-      workers = current_worker_count(queue)
-      required = calculate_required_workers(queue, num_enqueued)
-      scale_workers(queue, required) if workers < required
+      worker = get_worker(queue)
+      workers = current_worker_count(worker)
+      required = calculate_required_workers(worker, num_enqueued)
+      scale_workers(worker, required) if workers < required
     rescue => e # rubocop:disable Style/RescueStandardError
-      Rails.logger.info("Error scaling #{queue} up: #{e.message}")
+      Rails.logger.info("Error scaling #{worker} up: #{e.message}")
       Rails.logger.info(e.backtrace)
     end
 
     def scale_down(queue, num_enqueued)
       return unless Rails.env.production?
-      queue = get_valid_queue_name(queue)
       # Don't scale down if there are any running jobs, because we don't know what dyno it's running on
       return if num_enqueued > 0
-      workers = current_worker_count(queue)
-      required = calculate_required_workers(queue, num_enqueued)
-      scale_workers(queue, required) if workers > required
+      worker = get_worker(queue)
+      workers = current_worker_count(worker)
+      required = calculate_required_workers(worker, num_enqueued)
+      scale_workers(worker, required) if workers > required
     rescue => e # rubocop:disable Style/RescueStandardError
-      Rails.logger.info("Error scaling #{queue} down: #{e.message}")
+      Rails.logger.info("Error scaling #{worker} down: #{e.message}")
       Rails.logger.info(e.backtrace)
     end
 
-    def scale_workers(queue, count)
-      Rails.logger.info("Scaling #{queue} to #{count} workers")
-      heroku_api.formation.update(app_name, queue, quantity: count)
+    def scale_workers(worker, count)
+      Rails.logger.info("Scaling #{worker} to #{count} workers")
+      heroku_api.formation.update(app_name, worker, quantity: count)
     end
 
-    def current_worker_count(queue)
-      heroku_api.formation.info(app_name, queue)["quantity"]
+    def current_worker_count(worker)
+      heroku_api.formation.info(app_name, worker)["quantity"]
     end
 
-    def calculate_required_workers(queue, num_enqueued)
-      required = (num_enqueued.to_f / HerokuJobGovernator.config.queues[queue][:max_enqueued_per_worker]).ceil
-      max_workers = HerokuJobGovernator.config.queues[queue][:workers_max]
-      min_workers = HerokuJobGovernator.config.queues[queue][:workers_min]
+    def calculate_required_workers(worker, num_enqueued)
+      required = (num_enqueued.to_f / HerokuJobGovernator.config.workers[worker][:max_enqueued_per_worker]).ceil
+      max_workers = HerokuJobGovernator.config.workers[worker][:workers_max]
+      min_workers = HerokuJobGovernator.config.workers[worker][:workers_min]
       return max_workers if required > max_workers
       return min_workers if required < min_workers
       required
@@ -55,10 +55,9 @@ module HerokuJobGovernator
       @heroku_api ||= PlatformAPI.connect(ENV["HEROKU_API_KEY"])
     end
 
-    # If the specified queue name isn't in the config throw it in the default queue
-    def get_valid_queue_name(name)
-      name = name.to_sym
-      HerokuJobGovernator.config.queues.keys.include?(name) ? name : HerokuJobGovernator.config.default_queue
+    def get_worker(queue)
+      worker_info = HerokuJobGovernator.config.workers.find { |k, v| v[:queue_name].to_sym == queue.to_sym }
+      worker_info.nil? ? HerokuJobGovernator.config.default_worker : worker_info[0]
     end
   end
 end
