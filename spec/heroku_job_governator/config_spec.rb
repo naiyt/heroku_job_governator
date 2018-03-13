@@ -12,8 +12,8 @@ RSpec.describe HerokuJobGovernator::Config do
 
     it "raises an exception if the queues are formatted badly" do
       subject.queue_adapter = :delayed_job
-      subject.default_queue = :worker
-      subject.queues = "blah"
+      subject.default_worker = :worker
+      subject.workers = "blah"
 
       expect {
         subject.validate!
@@ -22,12 +22,13 @@ RSpec.describe HerokuJobGovernator::Config do
 
     it "raises an exception if specifying an unsupported queue adaptor" do
       subject.queue_adapter = :cool_new_adapter
-      subject.default_queue = :worker
-      subject.queues = {
+      subject.default_worker = :worker
+      subject.workers = {
         worker: {
           workers_min: 0,
           workers_max: 3,
           max_enqueued_per_worker: 2,
+          queue_name: "blah",
         },
       }
 
@@ -38,12 +39,13 @@ RSpec.describe HerokuJobGovernator::Config do
 
     it "returns true if there are no validation issues" do
       subject.queue_adapter = :delayed_job
-      subject.default_queue = :worker
-      subject.queues = {
+      subject.default_worker = :worker
+      subject.workers = {
         worker: {
           workers_min: 0,
           workers_max: 3,
           max_enqueued_per_worker: 2,
+          queue_name: "blahblah",
         },
       }
 

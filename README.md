@@ -33,8 +33,8 @@ Configuration example:
 ```ruby
 HerokuJobGovernator.configure do |config|
   config.queue_adapter = :delayed_job
-  config.default_queue = :worker
-  config.queues = {
+  config.default_worker = :worker
+  config.workers = {
     worker: {
       workers_min: 0,
       workers_max: 2,
@@ -52,8 +52,12 @@ end
 Options breakdown:
 
 - `queue_adapter` - this is one of the supported queue_adapters
-- `default_queue` - this is the default worker queue used when a specific job queue is not specified
-- `queues` - a hash of workers. Each must be given: `workers_min` (the minimum number of dynos that the worker will be scaled too), `workers_max` (the max number of dynos that the worker will be scaled too), and `max_enqueued_per_worker`
+- `default_worker` - this is the default worker used when a specific job queue is not specified
+- `workers` - a hash of workers. Each must be given:
+  - `workers_min` the minimum number of dynos that the worker will be scaled too
+  - `workers_max` the max number of dynos that the worker will be scaled too,
+  - `max_enqueued_per_worker` the max number of jobs enqueued before a new worker is spun up
+  - `queue_name` the actual queue name used by the job adapter. (e.g., if you are starting this worker with a resque command of `bundle exec rake environment resque:work QUEUE=critical` this should be set as `critical`)
 
 The gem will determine when to scale up based on (current number of enqueued jobs / `max_enqueued_per_worker`), rounded up. For example:
 
